@@ -6,6 +6,7 @@ import { cpus } from 'os';
 //import controllers
 import { healthcheck } from './controllers/controller-healthcheck';
 import { getTime, sampleTransaction } from './controllers/controller-sample';
+import { signup, login } from './controllers/authController';
 
 const numCPUs = cpus().length;
 
@@ -35,9 +36,14 @@ if (cluster.isPrimary) {
     //healthcheck routes
     router.get('/', healthcheck);
     router.get('/healthcheck', healthcheck);
+
     // sampleController routes
     router.get('/servertime', getTime);
     router.get('/transaction', sampleTransaction);
+
+    //auth routes
+    router.post('/signup', signup);
+    router.post('/login', login);
 
     app.listen(config.port, function () {
         const workerId =
