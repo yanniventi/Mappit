@@ -20,6 +20,8 @@ export interface PgConfig {
 export interface User {
     firstName: string;
     lastName: string;
-    email: string;
     password: string;
+    email: string;
+    age: number;
+    phoneNumber: string;
 }
