@@ -29,7 +29,7 @@ pool.on('error', function (err: Error) {
  */
 export const sqlToDB = async (
     sql: string,
-    data: string[][] | undefined = undefined
+    data: any[] | undefined = undefined
 ): Promise<QueryResult> => {
     logger.debug(`sqlExecSingleRow() sql: ${sql} | data: ${data}`);
     let result: QueryResult;
@@ -69,7 +69,7 @@ export const getTransaction = async (): Promise<PoolClient> => {
 export const sqlExecSingleRow = async (
     client: PoolClient,
     sql: string,
-    data: string[] | undefined = undefined
+    data: any[] | undefined = undefined
 ): Promise<QueryResult> => {
     logger.debug(`sqlExecSingleRow() sql: ${sql} | data: ${data}`);
     try {

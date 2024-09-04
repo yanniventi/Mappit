@@ -11,6 +11,8 @@ export const createUsersTable = async (): Promise<void> => {
             age INT,
             phone_number VARCHAR(15),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            reset_token VARCHAR(255),
+            reset_token_expires TIMESTAMP;
         );
     `;
     try {

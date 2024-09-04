@@ -21,11 +21,11 @@ export const createUser = async (user: User): Promise<User> => {
 
     const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
     const insertUserSql = `
-        INSERT INTO users (first_name, last_name, email, password) 
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO users (first_name, last_name, email, password, age, phone_number) 
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING first_name, last_name, email;
     `;
-    const userData = [user.firstName, user.lastName, user.email, hashedPassword];
+    const userData = [user.firstName, user.lastName, user.email, hashedPassword, user.age, user.phoneNumber];
     const client: PoolClient = await getTransaction();
 
     try {
@@ -38,6 +38,8 @@ export const createUser = async (user: User): Promise<User> => {
             firstName: createdUser.first_name,
             lastName: createdUser.last_name,
             email: createdUser.email,
+            age: createdUser.age,
+            phoneNumber: createdUser.phone_number,
             password: user.password, // Do not return the hashed password here for security reasons
         };
     } catch (error) {
@@ -80,6 +82,8 @@ export const loginUser = async (email: string, password: string): Promise<User> 
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
+            age: user.age,
+            phoneNumber: user.phone_number,
             password: password
         };
     } catch (error) {

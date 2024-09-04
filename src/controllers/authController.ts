@@ -3,7 +3,7 @@ import { createUser, loginUser } from './../models/userModel';
 import { logger } from './../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, password, email } = req.body;
+    const { firstName, lastName, password, email, age, phoneNumber } = req.body;
 
     try {
         // console.log("start");
@@ -15,7 +15,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         // }
         
 
-        const newUser = await createUser({ firstName, lastName, password, email });
+        const newUser = await createUser({ firstName, lastName, password, email, age, phoneNumber });
         res.status(201).json({
             message: 'User created successfully',
             user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },
