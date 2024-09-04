@@ -16,3 +16,10 @@ export interface PgConfig {
     max: number;
     idleTimeoutMillis: number;
 }
+
+export interface User {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+}

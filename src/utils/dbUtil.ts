@@ -35,6 +35,9 @@ export const sqlToDB = async (
     let result: QueryResult;
     try {
         result = await pool.query(sql, data);
+        result.rows.forEach((row, index) => {
+            console.log(`Row ${index + 1}:`, row);
+        });
         return result;
     } catch (error) {
         throw new Error(error.message);
@@ -66,7 +69,7 @@ export const getTransaction = async (): Promise<PoolClient> => {
 export const sqlExecSingleRow = async (
     client: PoolClient,
     sql: string,
-    data: string[][] | undefined = undefined
+    data: string[] | undefined = undefined
 ): Promise<QueryResult> => {
     logger.debug(`sqlExecSingleRow() sql: ${sql} | data: ${data}`);
     try {

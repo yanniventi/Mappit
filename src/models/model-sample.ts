@@ -29,7 +29,7 @@ export const getTimeModel = async (): Promise<QueryResult> => {
  */
 export const sampleTransactionModel = async (): Promise<string> => {
     const singleSql = 'DELETE FROM TEST;';
-    const singleData = undefined;
+    const singleData = undefined; // No data is needed for the DELETE query, so it's set to undefined.
     const multiSql = 'INSERT INTO TEST (testcolumn) VALUES ($1);';
     const multiData: string[][] = [['typescript'], ['is'], ['fun']];
     const client: PoolClient = await getTransaction();
