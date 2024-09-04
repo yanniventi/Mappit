@@ -1,5 +1,5 @@
-import { config } from './config';
 import express from 'express';
+
 import cluster from 'cluster';
 import { logger } from './utils/logger';
 import { cpus } from 'os';
@@ -8,30 +8,15 @@ import { healthcheck } from './controllers/controller-healthcheck';
 import { getTime, sampleTransaction } from './controllers/controller-sample';
 import { signup, login } from './controllers/authController';
 
-const numCPUs = cpus().length;
 
-if (cluster.isPrimary) {
-    // create a worker for each CPU
-    for (let i = 0; i < numCPUs; i++) {
-        cluster.fork();
-    }
-    cluster.on('online', (worker) => {
-        logger.info(`worker online, worker id: ${worker.id}`);
-    });
-    //if worker dies, create another one
-    cluster.on('exit', (worker, code, signal) => {
-        logger.error(
-            `worker died, worker id: ${worker.id} | signal: ${signal} | code: ${code}`
-        );
-        cluster.fork();
-    });
-} else {
-    //create express app
-    const app: express.Express = express();
-    const router: express.Router = express.Router();
+const app = express();
 
-    app.use(express.json());
-    app.use(router); // tell the app this is the router we are using
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
+// Use the user routes
+app.use('/api', usersRoutes);
+
 
     //healthcheck routes
     router.get('/', healthcheck);
@@ -53,3 +38,6 @@ if (cluster.isPrimary) {
         );
     });
 }
+
+export default app;
+

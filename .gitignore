@@ -1,4 +1,18 @@
-node_modules
-build
-.env
 package-lock.json
+
+# Node.js dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
