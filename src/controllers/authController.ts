@@ -1,19 +1,24 @@
 import { Request, Response } from 'express';
-import { createUser, loginUser } from './../models/userModel';
+import { createUser, loginUser, checkUserExists } from './../models/userModel';
 import { logger } from './../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, password, email, age, phoneNumber } = req.body;
 
+    // Basic validation for incoming request data
+    if (!email || !password || !firstName || !lastName) {
+        res.status(400).json({ message: 'Missing parameter(s)' });
+        return;
+    }
+
+
     try {
-        // console.log("start");
-        // const existingUser = await checkUserExists(email);
-        // console.log("end");
-        // if (existingUser) {
-        //     res.status(400).json({ message: 'Username already taken' });
-        //     return;
-        // }
-        
+        const existingUser = await checkUserExists(email);
+        console.log(existingUser);
+        if (existingUser) {
+            res.status(400).json({ message: 'Email already exist' });
+            return;
+        }
 
         const newUser = await createUser({ firstName, lastName, password, email, age, phoneNumber });
         res.status(201).json({

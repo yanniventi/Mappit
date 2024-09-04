@@ -98,20 +98,19 @@ export const loginUser = async (email: string, password: string): Promise<User> 
 /**
  * Check if a user exists in the database by email.
  * @param {string} email The email of the user to check.
- * @returns {Promise<User | null>} Returns the user object if the user exists, null otherwise.
+ * @returns {Promise<boolean>} Returns the user object if the user exists, null otherwise.
  */
-export const checkUserExists = async (email: string): Promise<User | null> => {
+export const checkUserExists = async (email: string): Promise<boolean> => {
     const getUserSql = `SELECT * FROM users WHERE email = $1;`;
-    const userData = [[email]];  // Adjusted to remove extra array nesting
+    const userData = [email];  // Adjusted to remove extra array nesting
 
     try {
         const result: QueryResult = await sqlToDB(getUserSql, userData);
 
         if (result.rows.length > 0) {
-            const user: User = result.rows[0];
-            return user; // Return the user object if exists
+            return true; // Return the user object if exists
         } else {
-            return null; // Return null if the user does not exist
+            return false; // Return null if the user does not exist
         }
     } catch (error) {
         throw new Error(`Failed to check if user exists: ${error.message}`);
