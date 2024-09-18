@@ -15,6 +15,7 @@ export interface PgConfig {
     port: number;
     max: number;
     idleTimeoutMillis: number;
+    googleMapsApiKey: string;
 }
 
 export interface User {
