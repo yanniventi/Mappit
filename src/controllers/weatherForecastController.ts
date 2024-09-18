@@ -19,7 +19,6 @@ export const getWeatherForecast = async (req: Request, res: Response): Promise<v
     try {
         // Fetch the weather data from the API
         const weatherResponse = await axios.get('https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast');
-        console.log("i m running");
         const { data } = weatherResponse.data;
 
         // Find the closest area to the provided latitude and longitude
@@ -60,10 +59,11 @@ export const getWeatherForecast = async (req: Request, res: Response): Promise<v
         });
 
     } catch (error) {
-        logger.error(`getWeatherForecast error: ${error.message}`);
+        const errMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+        logger.error(`getWeatherForecast error: ${errMsg}`);
         res.status(500).json({
             status: 'error',
-            message: error.message,
+            message: errMsg,
             statusCode: 500,
         });
     }
