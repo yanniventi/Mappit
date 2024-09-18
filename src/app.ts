@@ -5,6 +5,7 @@ import { logger } from './utils/logger';
 import trafficRoutes from './routes/trafficRoutes';
 import authRoutes from './routes/authRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
+import placeRoutes from './routes/placeRoutes';
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(express.json());
 app.use('/api', authRoutes);
 app.use('/api', resetPasswordRoutes);
 app.use('/api', trafficRoutes);
-
+app.use('/api', placeRoutes); 
 
 app.listen(config.port, function () {
     const workerId =
@@ -30,6 +31,4 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-
 export default app;
-

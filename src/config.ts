@@ -15,5 +15,6 @@ export const config: Config = {
         port: Number(process.env.DB_PORT) || 5432,
         max: Number(process.env.DB_MAX_CLIENTS) || 20,
         idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS) || 30000,
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
     },
 };
