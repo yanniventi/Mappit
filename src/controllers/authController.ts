@@ -7,16 +7,14 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     // Basic validation for incoming request data
     if (!email || !password || !firstName || !lastName) {
-        res.status(400).json({ message: 'Missing parameter(s)' });
+        res.status(400).json({ message: 'Missing required fields' });
         return;
     }
 
-
     try {
         const existingUser = await checkUserExists(email);
-        console.log(existingUser);
         if (existingUser) {
-            res.status(400).json({ message: 'Email already exist' });
+            res.status(409).json({ message: 'Email already exists' });
             return;
         }
 
@@ -26,6 +24,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },
         });
     } catch (error) {
+        if (error instanceof Error) {
+            logger.error(`signup error: ${error.message}`);
+        } else {
+            logger.error('Unexpected error type during signup');
+        }
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -40,10 +43,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     try {
-        // Call the loginUser function to authenticate the user
         const user = await loginUser(email, password);
-
-        // If successful, return the user data (without the password)
         res.status(200).json({
             message: 'Login successful',
             user: {
@@ -53,10 +53,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             },
         });
     } catch (error) {
-        // Log the error and return an appropriate error response
-        logger.error(`loginController error: ${error.message}`);
-
-        // For security reasons, avoid exposing specific error details (e.g., invalid credentials)
-        res.status(401).json({ message: 'Invalid email or password' });
+        if (error instanceof Error) {
+            logger.error(`login error: ${error.message}`);
+            res.status(401).json({ message: 'Invalid email or password' });
+        } else {
+            logger.error('Unexpected error type during login');
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 };
