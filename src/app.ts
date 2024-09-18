@@ -5,6 +5,7 @@ import { logger } from './utils/logger';
 
 import authRoutes from './routes/authRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
+import weatherForecastRoutes from './routes/weatherForecast';
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(express.json());
 // Use the user routes
 app.use('/api', authRoutes);
 app.use('/api', resetPasswordRoutes);
-app.use('/api', weatherRoute);
+app.use('/api', weatherForecastRoutes);
 
 app.listen(config.port, function () {
     const workerId =
