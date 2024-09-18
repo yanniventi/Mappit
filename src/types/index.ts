@@ -18,6 +18,7 @@ export interface PgConfig {
     googleMapsApiKey: string;
 }
 
+// for weather API
 export interface User {
     firstName: string;
     lastName: string;
@@ -25,4 +26,15 @@ export interface User {
     email: string;
     age: number;
     phoneNumber: string;
+}
+
+// for weather API
+export interface LabelLocation {
+    latitude: number;
+    longitude: number;
+}
+
+export interface AreaMetadata {
+    name: string;
+    label_location: LabelLocation;
 }
