@@ -5,6 +5,7 @@ import { logger } from './utils/logger';
 
 import authRoutes from './routes/authRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
+import placeRoutes from './routes/placeRoutes';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Use the user routes
 app.use('/api', authRoutes);
 app.use('/api', resetPasswordRoutes);
+app.use('/api', placeRoutes); 
 
 app.listen(config.port, function () {
     const workerId =
@@ -23,6 +25,4 @@ app.listen(config.port, function () {
     );
 });
 
-
 export default app;
-

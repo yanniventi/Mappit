@@ -11,6 +11,7 @@ const pgconfig: PgConfig = {
     port: config.db.port,
     max: config.db.max,
     idleTimeoutMillis: config.db.idleTimeoutMillis,
+    googleMapsApiKey: config.db.googleMapsApiKey
 };
 
 const pool = new Pool(pgconfig);
