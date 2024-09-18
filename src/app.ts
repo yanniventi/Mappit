@@ -2,7 +2,7 @@ import express from 'express';
 import cluster from 'cluster';
 import { config } from './config';
 import { logger } from './utils/logger';
-
+import trafficRoutes from './routes/trafficRoutes';
 import authRoutes from './routes/authRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
 
@@ -14,6 +14,8 @@ app.use(express.json());
 // Use the user routes
 app.use('/api', authRoutes);
 app.use('/api', resetPasswordRoutes);
+app.use('/api', trafficRoutes);
+
 
 app.listen(config.port, function () {
     const workerId =
@@ -21,6 +23,11 @@ app.listen(config.port, function () {
     logger.info(
         `worker started: ${workerId} | server listening on port: ${config.port}`
     );
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
 

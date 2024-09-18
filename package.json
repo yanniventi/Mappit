@@ -4,18 +4,20 @@
   "version": "2.0.0",
   "author": "Erik Mangor",
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.4.0",
     "async": "^3.2.6",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
-    "express": "^4.19.2",
+    "express": "^5.0.0",
     "nodemailer": "^6.9.15",
     "pg": "^8.12.0",
     "winston": "3.3.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@types/bcrypt": "^5.0.2",
     "@types/body-parser": "^1.19.1",
     "@types/dotenv": "^6.1.1",
@@ -27,11 +29,13 @@
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
+    "globals": "^15.9.0",
     "jest": "^27.0.6",
     "nodemon": "^3.1.4",
     "prettier": "2.3.2",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.4",
+    "typescript-eslint": "^8.5.0"
   },
   "engines": {
     "node": "16"

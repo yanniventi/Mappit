@@ -11,7 +11,7 @@ import { logger } from './../utils/logger';
 const transactionSuccess = 'transaction success';
 
 /**
- * sample query
+ * Sample query
  * @returns { Promise<QueryResult> }
  */
 export const getTimeModel = async (): Promise<QueryResult> => {
@@ -19,17 +19,21 @@ export const getTimeModel = async (): Promise<QueryResult> => {
     try {
         return await sqlToDB(sql);
     } catch (error) {
-        throw new Error(error.message);
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        } else {
+            throw new Error('An unknown error occurred in getTimeModel');
+        }
     }
 };
 
 /**
- * sample query using transactions
+ * Sample query using transactions
  * @returns { Promise<string> } transaction success
  */
 export const sampleTransactionModel = async (): Promise<string> => {
     const singleSql = 'DELETE FROM TEST;';
-    const singleData = undefined; // No data is needed for the DELETE query, so it's set to undefined.
+    const singleData = undefined;  // No data is needed for the DELETE query.
     const multiSql = 'INSERT INTO TEST (testcolumn) VALUES ($1);';
     const multiData: string[][] = [['typescript'], ['is'], ['fun']];
     const client: PoolClient = await getTransaction();
@@ -40,7 +44,12 @@ export const sampleTransactionModel = async (): Promise<string> => {
         return transactionSuccess;
     } catch (error) {
         await rollback(client);
-        logger.error(`sampleTransactionModel error: ${error.message}`);
-        throw new Error(error.message);
+        if (error instanceof Error) {
+            logger.error(`sampleTransactionModel error: ${error.message}`);
+            throw new Error(error.message);
+        } else {
+            logger.error('Unexpected error type during sampleTransactionModel');
+            throw new Error('An unexpected error occurred');
+        }
     }
 };
