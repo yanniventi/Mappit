@@ -14,6 +14,7 @@ app.use(express.json());
 // Use the user routes
 app.use('/api', authRoutes);
 app.use('/api', resetPasswordRoutes);
+app.use('/api', weatherRoute);
 
 app.listen(config.port, function () {
     const workerId =
