@@ -8,10 +8,11 @@ import {
     sqlToDB,
 } from './../utils/dbUtil';
 import { logger } from './../utils/logger';
+
 const transactionSuccess = 'transaction success';
 
 /**
- * sample query
+ * Sample query to get the current time from the database
  * @returns { Promise<QueryResult> }
  */
 export const getTimeModel = async (): Promise<QueryResult> => {
@@ -19,13 +20,19 @@ export const getTimeModel = async (): Promise<QueryResult> => {
     try {
         return await sqlToDB(sql);
     } catch (error) {
-        throw new Error(error.message);
+        if (error instanceof Error) {
+            logger.error(`getTimeModel error: ${error.message}`);
+            throw new Error(error.message);
+        } else {
+            logger.error('getTimeModel encountered a non-Error object');
+            throw new Error('An unknown error occurred');
+        }
     }
 };
 
 /**
- * sample query using transactions
- * @returns { Promise<string> } transaction success
+ * Sample transaction query
+ * @returns { Promise<string> } Transaction success
  */
 export const sampleTransactionModel = async (): Promise<string> => {
     const singleSql = 'DELETE FROM TEST;';
@@ -40,7 +47,12 @@ export const sampleTransactionModel = async (): Promise<string> => {
         return transactionSuccess;
     } catch (error) {
         await rollback(client);
-        logger.error(`sampleTransactionModel error: ${error.message}`);
-        throw new Error(error.message);
+        if (error instanceof Error) {
+            logger.error(`sampleTransactionModel error: ${error.message}`);
+            throw new Error(error.message);
+        } else {
+            logger.error('sampleTransactionModel encountered a non-Error object');
+            throw new Error('An unknown error occurred during the transaction');
+        }
     }
 };
