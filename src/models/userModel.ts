@@ -47,8 +47,6 @@ export const createUser = async (user: User): Promise<User> => {
         await rollback(client);
         logger.error(`signupModel error: ${getErrorMessage(error)}`);
         throw new Error(`Signup failed: ${getErrorMessage(error)}`);
-    } finally {
-        client.release(); // Ensure client is always released
     }
 };
 
@@ -87,8 +85,6 @@ export const loginUser = async (email: string, password: string): Promise<User> 
         await rollback(client);
         logger.error(`loginModel error: ${getErrorMessage(error)}`);
         throw new Error(`Login failed: ${getErrorMessage(error)}`);
-    } finally {
-        client.release();
     }
 };
 
