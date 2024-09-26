@@ -3,7 +3,7 @@ import cluster from 'cluster';
 import { config } from './config';
 import { logger } from './utils/logger';
 
-import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
 import weatherForecastRoutes from './routes/weatherForecast';
 import placeRoutes from './routes/placeRoutes';
@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 
 // Use the user routes
-app.use('/api', authRoutes);
+app.use('/api', userRoutes);
 app.use('/api', resetPasswordRoutes);
 app.use('/api', weatherForecastRoutes);
 app.use('/api', placeRoutes); 

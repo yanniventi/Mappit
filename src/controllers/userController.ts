@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createUser, loginUser, checkUserExists } from './../models/userModel';
-import { logger } from './../utils/logger';
+import { createUser, loginUser, checkUserExists } from '../models/userModel';
+import { logger } from '../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
     const { firstName, lastName, password, email, dob, phoneNumber } = req.body;
@@ -60,3 +60,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(401).json({ message: 'Invalid email or password' });
     }
 };
+
+
+
