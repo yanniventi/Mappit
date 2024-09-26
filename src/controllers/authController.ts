@@ -3,7 +3,7 @@ import { createUser, loginUser, checkUserExists } from './../models/userModel';
 import { logger } from './../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, password, email, age, phoneNumber } = req.body;
+    const { firstName, lastName, password, email, dob, phoneNumber } = req.body;
 
     // Basic validation for incoming request data
     if (!email || !password || !firstName || !lastName) {
@@ -18,7 +18,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const newUser = await createUser({ firstName, lastName, password, email, age, phoneNumber });
+        const newUser = await createUser({ firstName, lastName, password, email, dob, phoneNumber });
         res.status(201).json({
             message: 'User created successfully',
             user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },

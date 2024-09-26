@@ -23,11 +23,11 @@ function getErrorMessage(error: unknown): string {
 export const createUser = async (user: User): Promise<User> => {
     const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
     const insertUserSql = `
-        INSERT INTO users (first_name, last_name, email, password, age, phone_number) 
+        INSERT INTO users (first_name, last_name, email, password, date_of_birth, phone_number) 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING first_name, last_name, email, age, phone_number;
+        RETURNING first_name, last_name, email, date_of_birth, phone_number;
     `;
-    const userData = [user.firstName, user.lastName, user.email, hashedPassword, user.age, user.phoneNumber];
+    const userData = [user.firstName, user.lastName, user.email, hashedPassword, user.dob, user.phoneNumber];
     const client: PoolClient = await getTransaction();
 
     try {
@@ -39,7 +39,7 @@ export const createUser = async (user: User): Promise<User> => {
             firstName: createdUser.first_name,
             lastName: createdUser.last_name,
             email: createdUser.email,
-            age: createdUser.age,
+            dob: createdUser.dob,
             phoneNumber: createdUser.phone_number,
             password: '',  // Do not return the hashed password
         };
@@ -55,7 +55,7 @@ export const createUser = async (user: User): Promise<User> => {
  * @returns { Promise<User> } Authenticated user
  */
 export const loginUser = async (email: string, password: string): Promise<User> => {
-    const findUserSql = `SELECT first_name, last_name, email, password, age, phone_number FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth, phone_number FROM users WHERE email = $1;`;
     const userData = [email];
     const client: PoolClient = await getTransaction();
 
@@ -77,7 +77,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
-            age: user.age,
+            dob: user.dob,
             phoneNumber: user.phone_number,
             password: '',  // Do not return the hashed password
         };
