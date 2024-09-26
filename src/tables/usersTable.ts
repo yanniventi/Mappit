@@ -8,11 +8,11 @@ export const createUsersTable = async (): Promise<void> => {
             password VARCHAR(255) NOT NULL,
             first_name VARCHAR(100),
             last_name VARCHAR(100),
-            age INT,
+            date_of_birth DATE,
             phone_number VARCHAR(15),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             reset_token VARCHAR(255),
-            reset_token_expires TIMESTAMP;
+            reset_token_expires TIMESTAMP
         );
     `;
     try {

@@ -5,12 +5,13 @@ import { createUsersTable } from '../tables/usersTable'; // Import the createUse
 const createAllTables = async () => {
     try {
         await createUsersTable();  // Create the users table
-        console.log('All tables created successfully.');
     } catch (error) {
         console.error('Error creating tables:', error);
     } finally {
         await pool.end();  // Close the pool
     }
+
+    console.log('All tables created successfully.');
 };
 
 // Execute the table creation
