@@ -6,6 +6,8 @@ import {
     sqlExecSingleRow,
     sqlToDB,
 } from './../utils/dbUtil';
+import jwt from 'jsonwebtoken';
+
 import { logger } from './../utils/logger';
 import { User } from '../types';
 import bcrypt from 'bcrypt';
@@ -35,6 +37,7 @@ export const createUser = async (user: User): Promise<User> => {
         await commit(client);
         
         const createdUser = result.rows[0];
+
         return {
             firstName: createdUser.first_name,
             lastName: createdUser.last_name,
@@ -103,4 +106,44 @@ export const checkUserExists = async (email: string): Promise<boolean> => {
     } catch (error) {
         throw new Error(`Failed to check if user exists: ${getErrorMessage(error)}`);
     }
+};
+
+/**
+ * Finds a user by their email
+ * @param {string} email The email of the user to find.
+ * @returns {Promise<User | null>} User object if found, null otherwise.
+ */
+export const findUserByEmail = async (email: string): Promise<User | null> => {
+    const findUserSql = `SELECT first_name, last_name, email, date_of_birth, phone_number FROM users WHERE email = $1;`;
+    const userData = [email];
+    const client: PoolClient = await getTransaction();
+
+    try {
+        const result = await sqlExecSingleRow(client, findUserSql, userData);
+
+        if (result.rowCount === 0) {
+            return null;  // User not found
+        }
+
+        const user = result.rows[0];
+
+        return {
+            firstName: user.first_name,
+            lastName: user.last_name,
+            email: user.email,
+            dob: user.date_of_birth,
+            phoneNumber: user.phone_number,
+            password: '',  // No need to return the password here
+        };
+    } catch (error) {
+        await rollback(client);
+        logger.error(`findUserByEmail error: ${getErrorMessage(error)}`);
+        throw new Error(`Failed to find user by email: ${getErrorMessage(error)}`);
+    }
+};
+
+
+export const generateAccessJWT = (email: string) => {
+  const payload = { email: email };
+  return jwt.sign(payload, process.env.SECRET_ACCESS_TOKEN as string, { expiresIn: '20m' });
 };

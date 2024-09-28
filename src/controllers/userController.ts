@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, loginUser, checkUserExists } from '../models/userModel';
+import { createUser, loginUser, checkUserExists, generateAccessJWT } from '../models/userModel';
 import { logger } from '../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -44,9 +44,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         if (!user) { // Assuming loginUser returns null or undefined if authentication fails
             throw new Error('Invalid credentials provided.'); // Throw to catch block to handle as unauthorized access
         }
+        
+        // Setting up cookie
+        const options: import('express').CookieOptions = {
+            maxAge: 20 * 60 * 1000, // 20 minutes
+            httpOnly: true,         // Only accessible by the web server
+            secure: true,
+            sameSite: 'none',       // Ensure cross-site cookie works
+        };
+        const token = generateAccessJWT(user.email); // generate session token for user
 
-        // If successful, return the user data (without the password)
-        res.status(200).json({
+        res.cookie("SessionID", token, options); // set the token to response header, so that the client sends it back on each subsequent request
+        res.status(200).json({ // If successful, return the user data (without the password)
             message: 'Login successful',
             user: {
                 firstName: user.firstName,

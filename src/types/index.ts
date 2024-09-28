@@ -38,3 +38,9 @@ export interface AreaMetadata {
     name: string;
     label_location: LabelLocation;
 }
+
+declare module 'express' {
+    export interface Request {
+        user?: any; // Replace 'User' with the appropriate user type from your app
+    }
+}
