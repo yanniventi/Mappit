@@ -18,13 +18,20 @@ export interface PgConfig {
     googleMapsApiKey: string;
 }
 
-// for weather API
 export interface User {
     firstName: string;
     lastName: string;
     password: string;
     email: string;
     dob: string;
+    phoneNumber: string;
+}
+
+export interface UpdateProfileData {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    gender: string;
     phoneNumber: string;
 }
 

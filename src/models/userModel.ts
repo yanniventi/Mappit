@@ -9,7 +9,7 @@ import {
 import jwt from 'jsonwebtoken';
 
 import { logger } from './../utils/logger';
-import { User } from '../types';
+import { User, UpdateProfileData } from '../types';
 import bcrypt from 'bcrypt';
 const SALT_ROUNDS = 10;
 
@@ -146,4 +146,76 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 export const generateAccessJWT = (email: string) => {
   const payload = { email: email };
   return jwt.sign(payload, process.env.SECRET_ACCESS_TOKEN as string, { expiresIn: '20m' });
+};
+
+/**
+ * Updates a user's profile in the database
+ * @param userId The ID of the user to update
+ * @param updateData An object containing the fields to update
+ * @returns The updated user data or an error if the update fails
+ */
+export const updateUserProfile = async (userEmail: string, updateData: UpdateProfileData): Promise<void> => {
+    // Build the SQL query dynamically based on the provided fields
+    const fields: string[] = [];
+    const values: any[] = [];
+    const client: PoolClient = await getTransaction();
+    let index = 1;
+
+    if (updateData.firstName) {
+        fields.push(`first_name = $${index++}`);
+        values.push(updateData.firstName);
+    }
+    if (updateData.lastName) {
+        fields.push(`last_name = $${index++}`);
+        values.push(updateData.lastName);
+    }
+    if (updateData.dob) {
+        fields.push(`date_of_birth = $${index++}`);
+        values.push(updateData.dob);
+    }
+    if (updateData.gender) {
+        fields.push(`gender = $${index++}`);
+        values.push(updateData.gender);
+    }
+    if (updateData.phoneNumber) {
+        fields.push(`phone_number = $${index++}`);
+        values.push(updateData.phoneNumber);
+    }
+
+    // If no fields were provided, throw an error
+    if (fields.length === 0) {
+        throw new Error('No fields provided to update.');
+    }
+
+    // Add the user ID as the last parameter
+    values.push(userEmail);
+
+    // The SQL update query
+    const sql = `
+        UPDATE users
+        SET ${fields.join(', ')}
+        WHERE email = $${index}
+        RETURNING email, first_name, last_name, date_of_birth, gender, phone_number;
+    `;
+
+    try {
+        // Execute the SQL query to update the user's profile
+        const result = await sqlExecSingleRow(client, sql, values);
+
+        // Commit the transaction
+        await commit(client);
+
+        // Log the successful update
+        logger.info(`User profile updated successfully for email: ${userEmail}`);
+
+        // Return the updated user data
+        return result.rows[0]; // Returning the updated row from the query
+    } catch (error) {
+        // Rollback the transaction in case of any failure
+        if (client) {
+            await rollback(client);
+        }
+        logger.error(`Error updating user profile for email: ${userEmail} | ${getErrorMessage(error)}`);
+        throw new Error(`Error updating user profile: ${getErrorMessage(error)}`);
+    }
 };
