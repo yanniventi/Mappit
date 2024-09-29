@@ -18,21 +18,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Setting up cookie
-        const options: import('express').CookieOptions = {
-            maxAge: 20 * 60 * 1000, // 20 minutes
-            httpOnly: true,         // Only accessible by the web server
-            secure: true,
-            sameSite: 'none',       // Ensure cross-site cookie works
-        };
         const token = generateAccessJWT(email); // generate session token for user
-
-        res.cookie("SessionID", token, options); // set the token to response header, so that the client sends it back on each subsequent request
 
         const newUser = await createUser({ firstName, lastName, password, email, dob, phoneNumber });
         res.status(201).json({
             message: 'User created successfully',
             user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },
+            token
         });
     } catch (error) {
         logger.error(`Signup error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -56,16 +48,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             throw new Error('Invalid credentials provided.'); // Throw to catch block to handle as unauthorized access
         }
         
-        // Setting up cookie
-        const options: import('express').CookieOptions = {
-            maxAge: 20 * 60 * 1000, // 20 minutes
-            httpOnly: true,         // Only accessible by the web server
-            secure: true,
-            sameSite: 'none',       // Ensure cross-site cookie works
-        };
         const token = generateAccessJWT(user.email); // generate session token for user
 
-        res.cookie("SessionID", token, options); // set the token to response header, so that the client sends it back on each subsequent request
         res.status(200).json({ // If successful, return the user data (without the password)
             message: 'Login successful',
             user: {
@@ -73,6 +57,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 lastName: user.lastName,
                 email: user.email,
             },
+            token
         });
     } catch (error) {
         logger.error(`Login error: ${error instanceof Error ? error.message : 'Unknown error'}`);

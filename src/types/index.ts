@@ -46,6 +46,11 @@ export interface AreaMetadata {
     label_location: LabelLocation;
 }
 
+// Define the structure of the JWT payload
+export interface JWTpayload {
+    email: string;
+}
+
 declare module 'express' {
     export interface Request {
         user?: any; // Replace 'User' with the appropriate user type from your app

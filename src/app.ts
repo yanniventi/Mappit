@@ -1,6 +1,5 @@
 import express from 'express';
 import cluster from 'cluster';
-import cookieParser from "cookie-parser";
 import { config } from './config';
 import { logger } from './utils/logger';
 
@@ -13,7 +12,6 @@ import placeRoutes from './routes/placeRoutes';
 const app = express();
 
 app.disable("x-powered-by"); // Reduce fingerprinting
-app.use(cookieParser());
 // Middleware to parse JSON request bodies
 app.use(express.json());
 

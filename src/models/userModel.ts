@@ -6,6 +6,7 @@ import {
     sqlExecSingleRow,
     sqlToDB,
 } from './../utils/dbUtil';
+import { JWTpayload } from '../types';
 import jwt from 'jsonwebtoken';
 
 import { logger } from './../utils/logger';
@@ -144,8 +145,8 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 
 
 export const generateAccessJWT = (email: string) => {
-  const payload = { email: email };
-  return jwt.sign(payload, process.env.SECRET_ACCESS_TOKEN as string, { expiresIn: '20m' });
+    const payload: JWTpayload = { email };
+    return jwt.sign(payload, process.env.SECRET_ACCESS_TOKEN as string, { expiresIn: '1h' });
 };
 
 /**
