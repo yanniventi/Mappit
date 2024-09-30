@@ -1,41 +1,43 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { findUserByEmail } from '../models/userModel';
-
-// Define the structure of the decoded JWT token
-interface DecodedToken {
-    email: string;
-}
-
-
+import { JWTpayload } from '../types';
 
 export async function verify(req: Request, res: Response, next: NextFunction) {
     try {
-        const authHeader = req.headers["cookie"]; // get the session cookie from request header
+        // Get the Authorization header
+        const authHeader = req.headers['authorization'];
 
-        if (!authHeader) return res.sendStatus(401); // if there is no cookie from request header, send an unauthorized response.
-        const cookie = authHeader.split("=")[1]; // If there is, split the cookie string to get the actual jwt
+        // Check if Authorization header is present and properly formatted
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Unauthorized. Token missing or malformed.' });
+        }
 
-        // Verify using jwt to see if token has been tampered with or if it has expired.
-        // that's like checking the integrity of the cookie
-        jwt.verify(cookie, process.env.SECRET_ACCESS_TOKEN as string, async (err, decoded) => {
+        // Extract the token from the Authorization header
+        const token = authHeader.split(' ')[1];
+
+        // Verify the JWT token using your secret key
+        jwt.verify(token, process.env.SECRET_ACCESS_TOKEN as string, async (err, decoded) => {
             if (err) {
-                // if token has been altered or has expired, return an unauthorized error
-                return res
-                    .status(401)
-                    .json({ message: "This session has expired. Please login" });
+                return res.status(401).json({ message: 'Invalid or expired token. Please log in again.' });
             }
 
-            const { email } = decoded as DecodedToken; // get user id from the decoded token
-            const user = await findUserByEmail(email); // find user by that email
-            req.user = user; // put the data object into req.user
-            next();
+            const { email } = decoded as JWTpayload; // Get the email (or user id) from the decoded token
+
+            // Find the user by email
+            const user = await findUserByEmail(email);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found.' });
+            }
+
+            // Attach user data to the request object
+            req.user = user;
+            next(); // Proceed to the next middleware or route handler
         });
     } catch (err) {
         res.status(500).json({
             status: "error",
             code: 500,
-            data: [],
             message: "Internal Server Error",
         });
     }

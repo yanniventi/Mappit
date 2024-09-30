@@ -18,13 +18,21 @@ export interface PgConfig {
     googleMapsApiKey: string;
 }
 
-// for weather API
 export interface User {
     firstName: string;
     lastName: string;
     password: string;
     email: string;
+    gender: string;
     dob: string;
+    phoneNumber: string;
+}
+
+export interface UpdateProfileData {
+    firstName: string;
+    lastName: string;
+    dob: string;
+    gender: string;
     phoneNumber: string;
 }
 
@@ -37,6 +45,11 @@ export interface LabelLocation {
 export interface AreaMetadata {
     name: string;
     label_location: LabelLocation;
+}
+
+// Define the structure of the JWT payload
+export interface JWTpayload {
+    email: string;
 }
 
 declare module 'express' {
