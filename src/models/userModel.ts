@@ -28,7 +28,7 @@ export const createUser = async (user: User): Promise<User> => {
     const insertUserSql = `
         INSERT INTO users (first_name, last_name, email, password, date_of_birth, phone_number) 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING first_name, last_name, email, date_of_birth, phone_number;
+        RETURNING first_name, last_name, email, date_of_birth, phone_number, gender;
     `;
     const userData = [user.firstName, user.lastName, user.email, hashedPassword, user.dob, user.phoneNumber];
     const client: PoolClient = await getTransaction();
@@ -43,6 +43,7 @@ export const createUser = async (user: User): Promise<User> => {
             firstName: createdUser.first_name,
             lastName: createdUser.last_name,
             email: createdUser.email,
+            gender: createdUser.gender,
             dob: createdUser.dob,
             phoneNumber: createdUser.phone_number,
             password: '',  // Do not return the hashed password
@@ -59,7 +60,7 @@ export const createUser = async (user: User): Promise<User> => {
  * @returns { Promise<User> } Authenticated user
  */
 export const loginUser = async (email: string, password: string): Promise<User> => {
-    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth, phone_number FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth, phone_number, gender FROM users WHERE email = $1;`;
     const userData = [email];
     const client: PoolClient = await getTransaction();
 
@@ -81,6 +82,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
+            gender: user.gender,
             dob: user.dob,
             phoneNumber: user.phone_number,
             password: '',  // Do not return the hashed password
@@ -115,12 +117,11 @@ export const checkUserExists = async (email: string): Promise<boolean> => {
  * @returns {Promise<User | null>} User object if found, null otherwise.
  */
 export const findUserByEmail = async (email: string): Promise<User | null> => {
-    const findUserSql = `SELECT first_name, last_name, email, date_of_birth, phone_number FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT first_name, last_name, email, date_of_birth::TEXT, gender, phone_number FROM users WHERE email = $1;`;
     const userData = [email];
-    const client: PoolClient = await getTransaction();
 
     try {
-        const result = await sqlExecSingleRow(client, findUserSql, userData);
+        const result = await sqlToDB(findUserSql, userData);
 
         if (result.rowCount === 0) {
             return null;  // User not found
@@ -128,16 +129,20 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 
         const user = result.rows[0];
 
+        console.log(user.date_of_birth);
+        // Format the date_of_birth as YYYY-MM-DD, ensuring no time zone info
+        // const dob = user.date_of_birth ? user.date_of_birth.toISOString().split('T')[0] : "";
+
         return {
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
+            gender: user.gender,
             dob: user.date_of_birth,
             phoneNumber: user.phone_number,
             password: '',  // No need to return the password here
         };
     } catch (error) {
-        await rollback(client);
         logger.error(`findUserByEmail error: ${getErrorMessage(error)}`);
         throw new Error(`Failed to find user by email: ${getErrorMessage(error)}`);
     }
@@ -196,7 +201,7 @@ export const updateUserProfile = async (userEmail: string, updateData: UpdatePro
         UPDATE users
         SET ${fields.join(', ')}
         WHERE email = $${index}
-        RETURNING email, first_name, last_name, date_of_birth, gender, phone_number;
+        RETURNING email, first_name, last_name, date_of_birth::TEXT, gender, phone_number;
     `;
 
     try {
