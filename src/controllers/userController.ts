@@ -3,7 +3,7 @@ import { createUser, loginUser, checkUserExists, generateAccessJWT, updateUserPr
 import { logger } from '../utils/logger';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { firstName, lastName, password, email, dob, phoneNumber } = req.body;
+    const { firstName, lastName, password, email, gender, dob, phoneNumber } = req.body;
 
     // Basic validation for incoming request data
     if (!email || !password || !firstName || !lastName) {
@@ -20,7 +20,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
         const token = generateAccessJWT(email); // generate session token for user
 
-        const newUser = await createUser({ firstName, lastName, password, email, dob, phoneNumber });
+        const newUser = await createUser({ firstName, lastName, password, email, gender, dob, phoneNumber });
         res.status(201).json({
             message: 'User created successfully',
             user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },
@@ -103,5 +103,14 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         res.status(500).json({ message: 'Internal server error during profile update.' });
     }
 };
+
+export const getUser = async (req: Request, res: Response): Promise<void> => {
+    const user = req.user;
+
+    res.json({
+        message: `Retrieved`,
+        user: user,
+    });
+}
 
 
