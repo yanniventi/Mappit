@@ -21,11 +21,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         const token = generateAccessJWT(email); // generate session token for user
 
         const newUser = await createUser({ firstName, lastName, password, email, gender, dob, phoneNumber });
+
         res.status(201).json({
             message: 'User created successfully',
-            user: { firstName: newUser.firstName, lastName: newUser.lastName, email: newUser.email },
+            user: newUser,
             token
         });
+
     } catch (error) {
         logger.error(`Signup error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         res.status(500).json({ message: 'Internal server error during signup.' });
@@ -52,11 +54,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({ // If successful, return the user data (without the password)
             message: 'Login successful',
-            user: {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-            },
+            user: user,
             token
         });
     } catch (error) {

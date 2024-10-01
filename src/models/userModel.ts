@@ -26,7 +26,7 @@ function getErrorMessage(error: unknown): string {
 export const createUser = async (user: User): Promise<User> => {
     const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
     const insertUserSql = `
-        INSERT INTO users (first_name, last_name, email, password, date_of_birth, phone_number) 
+        INSERT INTO users (first_name, last_name, email, password, date_of_birth::TEXT, phone_number) 
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING first_name, last_name, email, date_of_birth, phone_number, gender;
     `;
@@ -44,7 +44,7 @@ export const createUser = async (user: User): Promise<User> => {
             lastName: createdUser.last_name,
             email: createdUser.email,
             gender: createdUser.gender,
-            dob: createdUser.dob,
+            dob: createdUser.date_of_birth,
             phoneNumber: createdUser.phone_number,
             password: '',  // Do not return the hashed password
         };
@@ -60,7 +60,7 @@ export const createUser = async (user: User): Promise<User> => {
  * @returns { Promise<User> } Authenticated user
  */
 export const loginUser = async (email: string, password: string): Promise<User> => {
-    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth, phone_number, gender FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth::TEXT, phone_number, gender FROM users WHERE email = $1;`;
     const userData = [email];
     const client: PoolClient = await getTransaction();
 
@@ -83,7 +83,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
             lastName: user.last_name,
             email: user.email,
             gender: user.gender,
-            dob: user.dob,
+            dob: user.date_of_birth,
             phoneNumber: user.phone_number,
             password: '',  // Do not return the hashed password
         };
