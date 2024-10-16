@@ -20,7 +20,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
         const token = generateAccessJWT(email); // generate session token for user
 
-        const newUser = await createUser({ firstName, lastName, password, email, gender, dob, phoneNumber });
+        const newUser = await createUser(firstName, lastName, password, email, gender, dob, phoneNumber);
 
         res.status(201).json({
             message: 'User created successfully',

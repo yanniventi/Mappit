@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken';
 import { logger } from './../utils/logger';
 import { User, UpdateProfileData } from '../types';
 import bcrypt from 'bcrypt';
+
 const SALT_ROUNDS = 10;
 
 // Function to safely extract error message
@@ -23,14 +24,14 @@ function getErrorMessage(error: unknown): string {
  * Registers a new user in the database
  * @returns { Promise<User> } Newly created user
  */
-export const createUser = async (user: User): Promise<User> => {
-    const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
+export const createUser = async (first_name: string, last_name: string, email: string, password: string, gender: string, dob: string, phoneNumber: string): Promise<User> => {
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     const insertUserSql = `
-        INSERT INTO users (first_name, last_name, email, password, date_of_birth::TEXT, phone_number) 
+        INSERT INTO users (first_name, last_name, email, password, date_of_birth, phone_number) 
         VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING first_name, last_name, email, date_of_birth, phone_number, gender;
+        RETURNING id, first_name, last_name, email, date_of_birth, phone_number, gender;
     `;
-    const userData = [user.firstName, user.lastName, user.email, hashedPassword, user.dob, user.phoneNumber];
+    const userData = [first_name, last_name, email, hashedPassword, dob, phoneNumber];
     const client: PoolClient = await getTransaction();
 
     try {
@@ -40,6 +41,7 @@ export const createUser = async (user: User): Promise<User> => {
         const createdUser = result.rows[0];
 
         return {
+            id: createdUser.id,
             firstName: createdUser.first_name,
             lastName: createdUser.last_name,
             email: createdUser.email,
@@ -60,7 +62,7 @@ export const createUser = async (user: User): Promise<User> => {
  * @returns { Promise<User> } Authenticated user
  */
 export const loginUser = async (email: string, password: string): Promise<User> => {
-    const findUserSql = `SELECT first_name, last_name, email, password, date_of_birth::TEXT, phone_number, gender FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT id, first_name, last_name, email, password, date_of_birth::TEXT, phone_number, gender FROM users WHERE email = $1;`;
     const userData = [email];
     const client: PoolClient = await getTransaction();
 
@@ -79,6 +81,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
         }
 
         return {
+            id: user.id,
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
@@ -117,7 +120,7 @@ export const checkUserExists = async (email: string): Promise<boolean> => {
  * @returns {Promise<User | null>} User object if found, null otherwise.
  */
 export const findUserByEmail = async (email: string): Promise<User | null> => {
-    const findUserSql = `SELECT first_name, last_name, email, date_of_birth::TEXT, gender, phone_number FROM users WHERE email = $1;`;
+    const findUserSql = `SELECT id, first_name, last_name, email, date_of_birth::TEXT, gender, phone_number FROM users WHERE email = $1;`;
     const userData = [email];
 
     try {
@@ -134,6 +137,7 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
         // const dob = user.date_of_birth ? user.date_of_birth.toISOString().split('T')[0] : "";
 
         return {
+            id: user.id,
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
