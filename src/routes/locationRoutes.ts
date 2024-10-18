@@ -5,6 +5,6 @@ import { fetchLocationsController } from '../controllers/locationController';
 const router = Router();
 
 // Define the routes
-router.post('/get-locations', fetchLocationsController);  
+router.get('/get-locations', fetchLocationsController);  
 
 export default router;
