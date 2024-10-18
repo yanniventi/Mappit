@@ -164,7 +164,7 @@ export const generateAccessJWT = (email: string) => {
  * @param updateData An object containing the fields to update
  * @returns The updated user data or an error if the update fails
  */
-export const updateUserProfile = async (userEmail: string, updateData: UpdateProfileData): Promise<void> => {
+export const updateUserProfile = async (userEmail: string, updateData: UpdateProfileData): Promise<UpdateProfileData> => {
     // Build the SQL query dynamically based on the provided fields
     const fields: string[] = [];
     const values: any[] = [];
@@ -219,7 +219,15 @@ export const updateUserProfile = async (userEmail: string, updateData: UpdatePro
         logger.info(`User profile updated successfully for email: ${userEmail}`);
 
         // Return the updated user data
-        return result.rows[0]; // Returning the updated row from the query
+        const user = result.rows[0];
+
+        return {
+            firstName: user.first_name,
+            lastName: user.last_name,
+            dob: user.date_of_birth,
+            gender: user.gender,
+            phoneNumber: user.phone_number,
+        };
     } catch (error) {
         // Rollback the transaction in case of any failure
         if (client) {
