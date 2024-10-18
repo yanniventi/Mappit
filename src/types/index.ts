@@ -53,6 +53,11 @@ export interface JWTpayload {
     email: string;
 }
 
+export interface Location {
+    id: number;
+    location_name: string;
+}
+
 declare module 'express' {
     export interface Request {
         user?: any; // Replace 'User' with the appropriate user type from your app
