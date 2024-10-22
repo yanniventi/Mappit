@@ -1,33 +1,24 @@
-// controllers/placeController.ts
 import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../config';
 import { logger } from '../utils/logger';
 
-// Interface to define the structure of API response data for better type safety
-interface NearbyPlace {
+// Interface for the text search results
+interface TextSearchPlace {
   name: string;
-  vicinity: string;
+  formatted_address: string;
   geometry: {
     location: {
       lat: number;
       lng: number;
     };
   };
-  // Add other necessary fields based on the Google API response structure
-}
-
-interface PlaceDetails {
-  name: string;
-  address: string;
-  reviews: Array<{
-    author_name: string;
-    rating: number;
-    text: string;
+  photos?: Array<{
+    photo_reference: string;
+    width: number;
+    height: number;
   }>;
-  // Add other necessary fields based on the Google API response structure
 }
-
 interface DirectionRoute {
   legs: Array<{
     start_address: string;
@@ -40,61 +31,65 @@ interface DirectionRoute {
   // Add other necessary fields based on the Google API response structure
 }
 
-// Controller to search for nearby places
-export const getNearbyPlaces = async (req: Request, res: Response, next: NextFunction) => {
-  const { location, radius, type } = req.query;
+// Controller to perform text search for places
+export const searchPlacesByText = async (req: Request, res: Response, next: NextFunction) => {
+  const { query, location, radius } = req.query;
 
-  if (!location || !radius || !type) {
-    return res.status(400).json({ error: 'Location, radius, and type are required' });
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required for text search' });
   }
 
   try {
-    const response = await axios.get<{ results: NearbyPlace[] }>(
-      'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+    const response = await axios.get<{ results: TextSearchPlace[] }>(
+      'https://maps.googleapis.com/maps/api/place/textsearch/json',
       {
         params: {
-          location, // e.g., "1.283366,103.860718" for Marina Bay Sands
-          radius, // e.g., 1500 (radius in meters)
-          type, // e.g., "restaurant", "hotel", etc.
+          query,  // e.g., "restaurants in New York"
+          location, // Optional, e.g., "1.283366,103.860718"
+          radius,  // Optional, e.g., 1500 (radius in meters)
           key: config.db.googleMapsApiKey,
         },
       }
     );
 
-    res.json(response.data.results); // Return the places found
+    res.json(response.data.results); // Return the search results
   } catch (error) {
-    logger.error(`Failed to fetch places: ${error.message}`);
-    res.status(500).json({ error: 'Failed to fetch places' });
+    logger.error(`Failed to search places by text: ${error.message}`);
+    res.status(500).json({ error: 'Failed to search places' });
   }
 };
 
-// Controller to get detailed place information including reviews
-export const getPlaceDetails = async (req: Request, res: Response, next: NextFunction) => {
-  const { place_id } = req.query;
+// Controller to get a place photo
+export const getPlacePhoto = async (req: Request, res: Response, next: NextFunction) => {
+  const { photo_reference, maxwidth, maxheight } = req.query;
 
-  if (!place_id) {
-    return res.status(400).json({ error: 'Place ID is required' });
+  if (!photo_reference) {
+    return res.status(400).json({ error: 'Photo reference is required' });
   }
 
   try {
-    const response = await axios.get<{ result: PlaceDetails }>(
-      'https://maps.googleapis.com/maps/api/place/details/json',
-      {
-        params: {
-          place_id, // The place_id returned from the Places API
-          key: config.db.googleMapsApiKey,
-        },
-      }
-    );
+    // Construct the URL for the place photo
+    const photoUrl = 'https://maps.googleapis.com/maps/api/place/photo';
 
-    res.json(response.data.result); // Return the place details including reviews
+    const response = await axios.get(photoUrl, {
+      responseType: 'arraybuffer',  // To handle image binary data
+      params: {
+        photoreference: photo_reference,
+        maxwidth: maxwidth || 400,  // Default to 400px if not provided
+        maxheight: maxheight || 400, // Default to 400px if not provided
+        key: config.db.googleMapsApiKey,
+      },
+    });
+
+    // Set appropriate headers for the image response
+    res.set('Content-Type', 'image/jpeg');
+    res.send(response.data);  // Send the binary image data
   } catch (error) {
-    logger.error(`Failed to fetch place details: ${error.message}`);
-    res.status(500).json({ error: 'Failed to fetch place details' });
+    logger.error(`Failed to fetch place photo: ${error.message}`);
+    res.status(500).json({ error: 'Failed to fetch place photo' });
   }
 };
 
-// Controller to get directions between two locations
 export const getDirections = async (req: Request, res: Response, next: NextFunction) => {
   const { origin, destination } = req.query;
 
