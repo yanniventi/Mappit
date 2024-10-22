@@ -1,21 +1,21 @@
 // routes/placeRoutes.ts
 import express, { Request, Response, NextFunction } from 'express';
 import {
-  getNearbyPlaces,
-  getPlaceDetails,
+  searchPlacesByText,
+  getPlacePhoto,
   getDirections
 } from './../controllers/placeController';
 
 const router = express.Router();
 
-// Route to search for nearby places (e.g., restaurants, hotels)
+// Route to get detailed place information including reviews through textsearch
 router.get('/places', (req: Request, res: Response, next: NextFunction) => {
-  getNearbyPlaces(req, res, next);
+  searchPlacesByText(req, res, next);
 });
 
-// Route to get detailed place information including reviews
+// Route to get photo of place (photo_reference from textsearch)
 router.get('/place-details', (req: Request, res: Response, next: NextFunction) => {
-  getPlaceDetails(req, res, next);
+  getPlacePhoto(req, res, next);
 });
 
 // Route to get directions between two locations
