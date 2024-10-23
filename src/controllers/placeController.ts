@@ -57,7 +57,7 @@ export const searchPlacesByText = async (req: Request, res: Response, next: Next
 
     res.json(response.data.results); // Return the search results
   } catch (error) {
-    logger.error(`Failed to search places by text: ${error.message}`);
+    logger.error(`Failed to search places by text: ${error instanceof Error ? error.message : String(error)}`);
     res.status(500).json({ error: 'Failed to search places' });
   }
 };
@@ -87,7 +87,7 @@ export const getPlacePhoto = async (req: Request, res: Response, next: NextFunct
     res.set('Content-Type', 'image/jpeg');
     res.send(response.data);  // Send the binary image data
   } catch (error) {
-    logger.error(`Failed to fetch place photo: ${error.message}`);
+    logger.error(`Failed to fetch place photo: ${error instanceof Error ? error.message : String(error)}`);
     res.status(500).json({ error: 'Failed to fetch place photo' });
   }
 };
