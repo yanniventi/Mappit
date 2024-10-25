@@ -12,7 +12,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 export const getLocations = async (): Promise<Location[]> => {
-    const getLocationSql = `SELECT id, location_name FROM locations;`;
+    const getLocationSql = `SELECT * FROM locations;`;
 
     try {
         const result: QueryResult = await sqlToDB(getLocationSql); // Execute the correct SQL query

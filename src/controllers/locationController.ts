@@ -19,7 +19,7 @@ export const fetchAllLocationsController = async (req: Request, res: Response): 
       // Respond with the list of locations
       res.status(200).json({
         success: true,
-        data: locations,
+        locations: locations,
       });
     } catch (error) {
       // Handle any errors
