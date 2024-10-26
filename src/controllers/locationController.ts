@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getLocations, getSavedLocationsByUser } from '../models/locationModel';
+import { getLocations, getSavedLocationsByUser, addSavedLocation, removeSavedLocation } from '../models/locationModel';
 import { logger } from '../utils/logger';
 
 // Helper function to get error message from unknown type
@@ -54,7 +54,7 @@ export const fetchSavedLocationsController = async (req: Request, res: Response)
 
       // If no locations found, return a 404
       if (!savedLocations || savedLocations.length === 0) {
-          return res.status(200).json({ message: 'No saved locations found for this user.' });
+          return res.status(200).json({ message: 'No saved locations found for this user.', savedLocations: [] });
       }
 
       // Return the saved locations as a JSON response
@@ -66,3 +66,42 @@ export const fetchSavedLocationsController = async (req: Request, res: Response)
       return res.status(500).json({ message: 'Failed to fetch saved locations.' });
   }
 };
+
+
+export const addSavedLocationController = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { user_id, location_id } = req.body;
+
+    if (!user_id || !location_id) {
+      res.status(400).json({ message: "Missing user_id or location_id" });
+      return;
+    }
+
+    await addSavedLocation(user_id, location_id);
+
+    res.status(200).json({ message: `Location with ID ${location_id} added to table for user ID ${user_id}` });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ message: `Failed to add saved location: ${errorMessage}` });
+  }
+};
+
+
+export const removeSavedLocationController = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { user_id, location_id } = req.body;
+
+    if (!user_id || !location_id) {
+      res.status(400).json({ message: "Missing user_id or location_id" });
+      return;
+    }
+
+    await removeSavedLocation(user_id, location_id);
+
+    res.status(200).json({ message: `Location with ID ${location_id} removed from saved locations for user ID ${user_id}` });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    res.status(500).json({ message: `Failed to remove saved location: ${errorMessage}` });
+  }
+};
+

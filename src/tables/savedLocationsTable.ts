@@ -16,6 +16,7 @@ export const createSavedLocationsTable = async (): Promise<void> => {
                 FOREIGN KEY(location_id)
                 REFERENCES locations(id)
                 ON DELETE CASCADE    -- If the location is deleted, its saved records are deleted
+            CONSTRAINT unique_user_location UNIQUE (user_id, location_id)
         );
     `;
     try {
