@@ -40,3 +40,36 @@ export const getSavedLocationsByUser = async (user_id: number): Promise<Location
         throw new Error(`Failed to fetch saved locations for user: ${getErrorMessage(error)}`);
     }
 };
+
+
+
+export const removeSavedLocation = async (user_id: number, location_id: number): Promise<void> => {
+    const removeSavedLocationSql = `
+        DELETE FROM saved_locations
+        WHERE user_id = $1 AND location_id = $2;
+    `;
+
+    try {
+        await sqlToDB(removeSavedLocationSql, [user_id, location_id]); // Execute SQL query with parameters
+        logger.info(`Location with ID ${location_id} removed from saved locations for user ID ${user_id}`);
+    } catch (error) {
+        logger.error(`removeSavedLocation error: ${getErrorMessage(error)}`);
+        throw new Error(`Failed to remove location from saved locations: ${getErrorMessage(error)}`);
+    }
+};
+
+export const addSavedLocation = async (user_id: number, location_id: number): Promise<void> => {
+    const addSavedLocationSql = `
+        INSERT INTO saved_locations (user_id, location_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, location_id) DO NOTHING;
+    `;
+
+    try {
+        await sqlToDB(addSavedLocationSql, [user_id, location_id]); // Execute SQL query with parameters
+        logger.info(`Location with ID ${location_id} added to saved locations for user ID ${user_id}`);
+    } catch (error) {
+        logger.error(`addSavedLocation error: ${getErrorMessage(error)}`);
+        throw new Error(`Failed to add location to saved locations: ${getErrorMessage(error)}`);
+    }
+};
