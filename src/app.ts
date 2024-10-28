@@ -8,6 +8,8 @@ import resetPasswordRoutes from './routes/resetPassword';
 import weatherForecastRoutes from './routes/weatherForecast';
 import placeRoutes from './routes/placeRoutes';
 import locationRoutes from './routes/locationRoutes';
+import tripRoutes from './routes/tripRoutes';
+import randomlocationRoutes from './routes/randomlocationRoutes';
 
 
 const app = express();
@@ -22,7 +24,9 @@ app.use('/api', resetPasswordRoutes);
 app.use('/api', trafficRoutes);
 app.use('/api', weatherForecastRoutes);
 app.use('/api', placeRoutes); 
-app.use('/api', locationRoutes)
+app.use('/api', locationRoutes);
+app.use('/api', tripRoutes);
+app.use('/api', randomlocationRoutes);
 
 app.listen(config.port, function () {
     const workerId =
@@ -32,7 +36,7 @@ app.listen(config.port, function () {
     );
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
