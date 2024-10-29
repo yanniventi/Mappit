@@ -8,6 +8,7 @@ import resetPasswordRoutes from './routes/resetPassword';
 import weatherForecastRoutes from './routes/weatherForecast';
 import placeRoutes from './routes/placeRoutes';
 import locationRoutes from './routes/locationRoutes';
+import expensesRoutes from './routes/expensesRoutes';
 
 import path from 'path'; // For resolving directory paths
 
@@ -23,6 +24,7 @@ app.use('/api', resetPasswordRoutes);
 app.use('/api', weatherForecastRoutes);
 app.use('/api', placeRoutes); 
 app.use('/api', locationRoutes)
+app.use('/api', expensesRoutes)
 app.use('/api/assets/locations', express.static(path.join(__dirname, '../src/assets/locations'))); // serve the static files (images) to the client
 
 app.listen(config.port, function () {

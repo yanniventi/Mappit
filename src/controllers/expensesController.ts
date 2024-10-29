@@ -46,21 +46,10 @@ export const insertExpense = async (req: Request, res: Response): Promise<void> 
  * @returns { Promise<void> }
  */
 export const getExpenses = async (req: Request, res: Response): Promise<void> => {
-    const { user_id } = req.params;
-
-    const userIdNumber = parseInt(user_id, 10);
-
-    if (isNaN(userIdNumber)) {
-        res.status(400).json({
-            status: 'error',
-            message: 'Invalid User ID',
-            statusCode: 400,
-        });
-        return;
-    }
+    const { user_id } = req.body;
 
     try {
-        const result: QueryResult = await getExpensesModel(userIdNumber);
+        const result: QueryResult = await getExpensesModel(user_id);
         res.status(200).json({
             status: 'ok',
             message: result.rows,
