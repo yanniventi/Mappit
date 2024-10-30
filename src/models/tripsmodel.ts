@@ -18,7 +18,7 @@ export const getTripsByUserId = async (userId: string): Promise<Trip[]> => {
 
 // Function to add a new trip
 export const addTrip = async (userId: string, tripData: Trip): Promise<Trip> => {
-    const {location_id ,start_date, end_date } = tripData;
+    const {places_id,start_date, end_date } = tripData;
     const addTripSql = `
         INSERT INTO trips (user_id, location_id, start_date, end_date)
         VALUES ($1, $2, $3,$4)
@@ -26,7 +26,7 @@ export const addTrip = async (userId: string, tripData: Trip): Promise<Trip> => 
     `;
 
     try {
-        const result: QueryResult = await sqlToDB(addTripSql, [userId,location_id,start_date, end_date]);
+        const result: QueryResult = await sqlToDB(addTripSql, [userId,places_id ,start_date, end_date]);
         return result.rows[0];
     } catch (error) {
         logger.error(`addTrip error: ${getErrorMessage(error)}`);
