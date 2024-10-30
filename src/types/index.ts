@@ -53,10 +53,18 @@ export interface JWTpayload {
     email: string;
 }
 
-export interface Location {
+export type Location = {
     id: number;
     location_name: string;
-}
+    country: string;
+    about: string;
+    additional_info: string;
+    location: string;
+    phone: string;
+    web_address: string;
+    opening_closing_hours: string;
+    img_url: string;
+};
 
 export interface Trip       {
     id?: number;

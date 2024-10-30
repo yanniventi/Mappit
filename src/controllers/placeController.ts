@@ -4,25 +4,19 @@ import { Request, Response, NextFunction } from 'express';
 import { config } from '../config';
 import { logger } from '../utils/logger';
 
-// Interface to define the structure of API response data for better type safety
-interface NearbyPlace {
+interface TextSearchPlace {
   name: string;
-  vicinity: string;
+  formatted_address: string;
   geometry: {
     location: {
       lat: number;
       lng: number;
     };
   };
-}
-
-interface PlaceDetails {
-  name: string;
-  address: string;
-  reviews: Array<{
-    author_name: string;
-    rating: number;
-    text: string;
+  photos?: Array<{
+    photo_reference: string;
+    width: number;
+    height: number;
   }>;
 }
 
@@ -41,51 +35,60 @@ function isError(error: any): error is Error {
   return error instanceof Error;
 }
 
-export const getNearbyPlaces = async (req: Request, res: Response, next: NextFunction) => {
-  const { location, radius, type } = req.query;
+export const searchPlacesByText = async (req: Request, res: Response, next: NextFunction) => {
+  const { query, location, radius } = req.query;
 
-  if (!location || !radius || !type) {
-    return res.status(400).json({ error: 'Location, radius, and type are required parameters.' });
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required for text search' });
   }
 
   try {
-    const response = await axios.get<{ results: NearbyPlace[] }>('https://maps.googleapis.com/maps/api/place/nearbysearch/json', {
-      params: {
-        location,
-        radius,
-        type,
-        key: config.db.googleMapsApiKey,
-      },
-    });
+    const response = await axios.get<{ results: TextSearchPlace[] }>(
+      'https://maps.googleapis.com/maps/api/place/textsearch/json',
+      {
+        params: {
+          query,  // e.g., "restaurants in New York"
+          location, // Optional, e.g., "1.283366,103.860718"
+          radius,  // Optional, e.g., 1500 (radius in meters)
+          key: config.db.googleMapsApiKey,
+        },
+      }
+    );
 
-    res.json({ places: response.data.results });
+    res.json(response.data.results); // Return the search results
   } catch (error) {
-    const message = isError(error) ? error.message : 'Unknown error occurred';
-    logger.error(`Failed to fetch places: ${message}`);
-    res.status(500).json({ error: 'Failed to fetch places due to an internal error.' });
+    logger.error(`Failed to search places by text: ${error instanceof Error ? error.message : String(error)}`);
+    res.status(500).json({ error: 'Failed to search places' });
   }
 };
 
-export const getPlaceDetails = async (req: Request, res: Response, next: NextFunction) => {
-  const { place_id } = req.query;
+export const getPlacePhoto = async (req: Request, res: Response, next: NextFunction) => {
+  const { photo_reference, maxwidth, maxheight } = req.query;
 
-  if (!place_id) {
-    return res.status(400).json({ error: 'Place ID is a required parameter.' });
+  if (!photo_reference) {
+    return res.status(400).json({ error: 'Photo reference is required' });
   }
 
   try {
-    const response = await axios.get<{ result: PlaceDetails }>('https://maps.googleapis.com/maps/api/place/details/json', {
+    // Construct the URL for the place photo
+    const photoUrl = 'https://maps.googleapis.com/maps/api/place/photo';
+
+    const response = await axios.get(photoUrl, {
+      responseType: 'arraybuffer',  // To handle image binary data
       params: {
-        place_id,
+        photoreference: photo_reference, // Get from textsearch api
+        maxwidth: maxwidth || 400,  // Default to 400px if not provided
+        maxheight: maxheight || 400, // Default to 400px if not provided
         key: config.db.googleMapsApiKey,
       },
     });
 
-    res.json({ details: response.data.result });
+    // Set appropriate headers for the image response
+    res.set('Content-Type', 'image/jpeg');
+    res.send(response.data);  // Send the binary image data
   } catch (error) {
-    const message = isError(error) ? error.message : 'Unknown error occurred';
-    logger.error(`Failed to fetch place details: ${message}`);
-    res.status(500).json({ error: 'Failed to fetch place details due to an internal error.' });
+    logger.error(`Failed to fetch place photo: ${error instanceof Error ? error.message : String(error)}`);
+    res.status(500).json({ error: 'Failed to fetch place photo' });
   }
 };
 

@@ -10,7 +10,9 @@ import placeRoutes from './routes/placeRoutes';
 import locationRoutes from './routes/locationRoutes';
 import tripRoutes from './routes/tripRoutes';
 import randomlocationRoutes from './routes/randomlocationRoutes';
+import expensesRoutes from './routes/expensesRoutes';
 
+import path from 'path'; // For resolving directory paths
 
 const app = express();
 
@@ -27,6 +29,8 @@ app.use('/api', placeRoutes);
 app.use('/api', locationRoutes);
 app.use('/api', tripRoutes);
 app.use('/api', randomlocationRoutes);
+app.use('/api', expensesRoutes)
+app.use('/api/assets/locations', express.static(path.join(__dirname, '../src/assets/locations'))); // serve the static files (images) to the client
 
 app.listen(config.port, function () {
     const workerId =
