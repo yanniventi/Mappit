@@ -4,6 +4,7 @@ import { createLocationsTable, insertLocations } from '../tables/locationsTable'
 import {createTripsTable } from '../tables/tripsTable';
 import { createExpensesTable } from '../tables/expensesTable';
 import { createSavedLocationsTable } from '../tables/savedLocationsTable';
+import { createplacesInTripTable } from '../tables/placesTable';
 
 // Main function to create all tables
 const createAllTables = async () => {
@@ -14,6 +15,7 @@ const createAllTables = async () => {
         await createTripsTable();
         await createExpensesTable(); // Create Expenses table
         await createSavedLocationsTable(); // Create Saved-locations table
+        await createplacesInTripTable(); // Create PLavesIntrip table 
     } catch (error) {
         console.error('Error creating tables:', error);
     } finally {
