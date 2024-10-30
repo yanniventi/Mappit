@@ -18,13 +18,21 @@ export const getTime = async (req: Request, res: Response): Promise<void> => {
             statusCode: 200,
         });
     } catch (error) {
-        const errMsg = error instanceof Error ? error.message : 'Unknown error occurred';
-        logger.error(`getTime error: ${errMsg}`);
-        res.status(500).json({
-            status: 'error',
-            message: 'Failed to retrieve time data',
-            statusCode: 500,
-        });
+        if (error instanceof Error) {
+            logger.error(`getTime error: ${error.message}`);
+            res.status(500).json({
+                status: 'error',
+                message: 'Internal server error',
+                statusCode: 500,
+            });
+        } else {
+            logger.error('Unexpected error type during getTime');
+            res.status(500).json({
+                status: 'error',
+                message: 'Internal server error due to unexpected condition',
+                statusCode: 500,
+            });
+        }
     }
 };
 

@@ -66,6 +66,14 @@ export type Location = {
     img_url: string;
 };
 
+export interface Trip       {
+    id?: number;
+    user_id: string;
+    location_id?:string;
+    start_date?: Date;
+    end_date?: Date;
+}
+
 declare module 'express' {
     export interface Request {
         user?: any; // Replace 'User' with the appropriate user type from your app

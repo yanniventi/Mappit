@@ -1,6 +1,7 @@
 import pool from '../config/db'; // Database connection
 import { createUsersTable } from '../tables/usersTable'; // Import the createUsersTable function
 import { createLocationsTable, insertLocations } from '../tables/locationsTable';
+import {createTripsTable } from '../tables/tripsTable';
 import { createExpensesTable } from '../tables/expensesTable';
 import { createSavedLocationsTable } from '../tables/savedLocationsTable';
 
@@ -10,6 +11,7 @@ const createAllTables = async () => {
         await createUsersTable();  // Create the users table
         await createLocationsTable(); // Create the locations table
         await insertLocations(); // Insert placeholder data
+        await createTripsTable();
         await createExpensesTable(); // Create Expenses table
         await createSavedLocationsTable(); // Create Saved-locations table
     } catch (error) {

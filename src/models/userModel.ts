@@ -68,6 +68,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
 
     try {
         const result = await sqlExecSingleRow(client, findUserSql, userData);
+        await client.release(); // Ensure the client is released after use
 
         if (result.rowCount === 0) {
             throw new Error('User not found');
