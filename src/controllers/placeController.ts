@@ -20,6 +20,17 @@ interface TextSearchPlace {
   }>;
 }
 
+interface PlaceDetails {
+  name: string;
+  address: string;
+  description?: string;
+  reviews: Array<{
+    author_name: string;
+    rating: number;
+    text: string;
+  }>;
+}
+
 interface DirectionRoute {
   legs: Array<{
     start_address: string;
@@ -89,6 +100,34 @@ export const getPlacePhoto = async (req: Request, res: Response, next: NextFunct
   } catch (error) {
     logger.error(`Failed to fetch place photo: ${error instanceof Error ? error.message : String(error)}`);
     res.status(500).json({ error: 'Failed to fetch place photo' });
+  }
+};
+
+export const getPlaceDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const { place_id } = req.query;
+
+  if (!place_id) {
+    return res.status(400).json({ error: 'Place ID is required' });
+  }
+
+  try {
+    const response = await axios.get<{ result: PlaceDetails & { editorial_summary?: { overview: string } } }>(
+      'https://maps.googleapis.com/maps/api/place/details/json',
+      {
+        params: {
+          place_id,
+          key: config.db.googleMapsApiKey,
+        },
+      }
+    );
+
+    const placeDetails = response.data.result;
+    const description = placeDetails.editorial_summary?.overview || ''; 
+
+    res.json({ ...placeDetails, description });
+  } catch (error) {
+    logger.error(`Failed to fetch place details: ${error instanceof Error ? error.message : String(error)}`);
+    res.status(500).json({ error: 'Failed to fetch place details' });
   }
 };
 
