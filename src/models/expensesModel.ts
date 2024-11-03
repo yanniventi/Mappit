@@ -51,3 +51,15 @@ export const getExpensesModel = async (userId: number): Promise<QueryResult> => 
         throw new Error('Failed to retrieve expenses');
     }
 };
+
+/**
+ * Deletes an expense by user_id and expense_id
+ * @param { string } user_id
+ * @param { string } expense_id
+ * @returns { Promise<QueryResult> }
+ */
+export const deleteExpenseModel = async (user_id: string, expense_id: string): Promise<QueryResult> => {
+    const query = 'DELETE FROM expenses WHERE user_id = $1 AND id = $2';
+    const values = [user_id, expense_id];
+    return pool.query(query, values);
+};
