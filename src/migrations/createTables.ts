@@ -1,12 +1,14 @@
 import pool from '../config/db'; // Database connection
 import { createUsersTable } from '../tables/usersTable'; // Import the createUsersTable function
-import { createLocationsTable, insertLocations } from '../tables/locationsTable';
+import { createLocationsTable, 
+    // insertLocations 
+} from '../tables/locationsTable';
 import {createTripsTable } from '../tables/tripsTable';
 import { createExpensesTable } from '../tables/expensesTable';
 import { createSavedLocationsTable } from '../tables/savedLocationsTable';
 import { createplacesInTripTable } from '../tables/placesTable';
 import { createSublocationsTable } from '../tables/subLocationsTable';
-import { insertSublocations } from '../tables/subLocationsTable';
+// import { insertSublocations } from '../tables/subLocationsTable';
 
 // Main function to create all tables
 const createAllTables = async () => {
