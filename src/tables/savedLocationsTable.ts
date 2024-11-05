@@ -1,9 +1,9 @@
 import pool from '../config/db'; // Import the database connection
 
-// Function to create the 'users' table
+// Function to create the 'saved_locations' table
 export const createSavedLocationsTable = async (): Promise<void> => {
     const query = `
-        CREATE TABLE IF NOT EXIST saved_locations (
+        CREATE TABLE IF NOT EXISTS saved_locations (
             id SERIAL PRIMARY KEY,  -- Auto-incrementing ID for saved locations
             user_id INT NOT NULL,   -- Foreign key referencing the users table
             location_id INT NOT NULL, -- Foreign key referencing the locations table
@@ -15,7 +15,7 @@ export const createSavedLocationsTable = async (): Promise<void> => {
             CONSTRAINT fk_location
                 FOREIGN KEY(location_id)
                 REFERENCES locations(id)
-                ON DELETE CASCADE    -- If the location is deleted, its saved records are deleted
+                ON DELETE CASCADE,   -- If the location is deleted, its saved records are deleted
             CONSTRAINT unique_user_location UNIQUE (user_id, location_id)
         );
     `;

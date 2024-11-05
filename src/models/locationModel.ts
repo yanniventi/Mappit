@@ -26,10 +26,15 @@ export const getLocations = async (): Promise<Location[]> => {
 
 
 export const getSavedLocationsByUser = async (user_id: number): Promise<Location[]> => {
+    // const getSavedLocationsSql = `
+    //     SELECT loc.id, loc.location_name, loc.country, loc.about, loc.additional_info, loc.location, loc.phone, loc.web_address, loc.opening_closing_hours, loc.img_url
+    //     FROM saved_locations sl
+    //     JOIN locations loc ON sl.location_id = loc.id
+    //     WHERE sl.user_id = $1;`; // $1 is a placeholder for the user_id
     const getSavedLocationsSql = `
-        SELECT loc.id, loc.location_name, loc.country, loc.about, loc.additional_info, loc.location, loc.phone, loc.web_address, loc.opening_closing_hours, loc.img_url
+        SELECT loc.id, loc.location_name, loc.about, loc.additional_info, loc.img_url
         FROM saved_locations sl
-        JOIN locations loc ON sl.location_id = loc.id
+        JOIN sublocations loc ON sl.location_id = loc.id
         WHERE sl.user_id = $1;`; // $1 is a placeholder for the user_id
 
     try {

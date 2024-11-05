@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { insertExpense, getExpenses } from '../controllers/expensesController';
+import { insertExpense, getExpenses, deleteExpense } from '../controllers/expensesController';
 
 const router = Router();
 
 // Define the routes
-router.get('/get-expenses', getExpenses);
+router.post('/get-expenses', getExpenses);
 router.post('/add-expenses', insertExpense);
+router.delete('/delete-expense', deleteExpense);
 
 export default router;
