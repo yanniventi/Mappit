@@ -7,7 +7,7 @@ export const createplacesInTripTable = async (): Promise<void> => {
             id SERIAL PRIMARY KEY,
             user_id INT NOT NULL,
             trips_id INT NOT NULL,     
-            places_id string,        
+            places_id VARCHAR(20),        
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             FOREIGN KEY (trips_id) REFERENCES trips(id) ON DELETE CASCADE
         );
