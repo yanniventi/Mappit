@@ -2,6 +2,7 @@ import { QueryResult } from 'pg';
 import { sqlToDB } from './../utils/dbUtil';
 import { Trip } from '../types';
 import { logger } from './../utils/logger';
+import pool from '../config/db';
 
 // Function to get all trips by user ID
 export const getTripsByUserId = async (userId: string): Promise<Trip[]> => {
@@ -51,3 +52,11 @@ export const getTripById = async (tripId: string): Promise<Trip | null> => {
 function getErrorMessage(error: unknown): string {
     return error instanceof Error ? error.message : 'An unknown error occurred';
 }
+
+// Function to delete a trip by trip ID
+export const deleteTripById = async (tripId: string): Promise<QueryResult> => {
+    const query = 'DELETE FROM trips WHERE id = $1';
+    const values = [tripId];
+    return pool.query(query, values);
+};
+

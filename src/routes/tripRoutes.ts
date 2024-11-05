@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getTrips, createTrip, getTrip } from '../controllers/tripcontroller';
+import { getTrips, createTrip, getTrip, deleteTrip } from '../controllers/tripcontroller';
 
 const router = Router();
 
@@ -11,5 +11,9 @@ router.post('/users/:userId/trips', createTrip);
 
 // Route to get a specific trip by trip ID
 router.get('/trips/:tripId', getTrip);
+
+// Route to delete a specific trip by trip ID
+router.delete('/trips/:tripId', deleteTrip);
+
 
 export default router;

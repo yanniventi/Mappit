@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getTripsByUserId, addTrip, getTripById } from '../models/tripsmodel';
+import { getTripsByUserId, addTrip, getTripById, deleteTripById } from '../models/tripsmodel';
 import { logger } from './../utils/logger';
 
 // Controller to get all trips by user ID
@@ -43,5 +43,36 @@ export const getTrip = async (req: Request, res: Response): Promise<void> => {
     } catch (error) {
         logger.error(`createTrip error: ${(error as Error).message}`);
         res.status(500).json({ error: 'Failed to fetch trip' });
+    }
+};
+
+// Controller to delete a trip by trip ID
+export const deleteTrip = async (req: Request, res: Response): Promise<void> => {
+    const { tripId } = req.params;
+
+    try {
+        const deleteResult = await deleteTripById(tripId);
+
+        if (deleteResult.rowCount === 0) {
+            res.status(404).json({
+                status: 'error',
+                message: 'Trip not found or not deleted',
+                statusCode: 404,
+            });
+        } else {
+            res.status(200).json({
+                status: 'ok',
+                message: 'Trip deleted successfully',
+                statusCode: 200,
+            });
+        }
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+        logger.error(`deleteTrip error: ${errMsg}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to delete trip',
+            statusCode: 500,
+        });
     }
 };
