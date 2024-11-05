@@ -70,8 +70,16 @@ export interface Trip       {
     id?: number;
     user_id: string;
     places_id?: string;
+    location_name?: string;
     start_date?: Date;
     end_date?: Date;
+}
+
+export interface Places       {
+    id?: number;
+    user_id: string;
+    trips_id: string;
+    places_id?:string;
 }
 
 declare module 'express' {

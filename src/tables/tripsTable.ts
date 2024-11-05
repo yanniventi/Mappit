@@ -6,7 +6,8 @@ export const createTripsTable = async (): Promise<void> => {
         CREATE TABLE IF NOT EXISTS trips (
             id SERIAL PRIMARY KEY, 
             user_id INT NOT NULL,
-            places_id TEXT NOT NULL,
+            places_id VARCHAR(255) NOT NULL,
+            location_name VARCHAR(255),
             start_date DATE NOT NULL, 
             end_date DATE,             
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
