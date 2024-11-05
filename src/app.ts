@@ -11,6 +11,8 @@ import locationRoutes from './routes/locationRoutes';
 import tripRoutes from './routes/tripRoutes';
 import randomlocationRoutes from './routes/randomlocationRoutes';
 import expensesRoutes from './routes/expensesRoutes';
+import placesRoutes from './routes/placesRoutes';
+
 
 import path from 'path'; // For resolving directory paths
 
@@ -29,7 +31,8 @@ app.use('/api', placeRoutes);
 app.use('/api', locationRoutes);
 app.use('/api', tripRoutes);
 app.use('/api', randomlocationRoutes);
-app.use('/api', expensesRoutes)
+app.use('/api', expensesRoutes);
+app.use('/api', placesRoutes);
 app.use('/api/assets/locations', express.static(path.join(__dirname, '../src/assets/locations'))); // serve the static files (images) to the client
 
 app.listen(config.port, function () {
@@ -39,10 +42,4 @@ app.listen(config.port, function () {
         `worker started: ${workerId} | server listening on port: ${config.port}`
     );
 });
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
 export default app;
