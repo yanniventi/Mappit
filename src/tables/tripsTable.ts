@@ -4,12 +4,14 @@ import pool from '../config/db'; // Import the database connection
 export const createTripsTable = async (): Promise<void> => {
     const query = `
         CREATE TABLE IF NOT EXISTS trips (
+            CREATE TABLE IF NOT EXISTS trips (
             id SERIAL PRIMARY KEY, 
             user_id INT NOT NULL,
             places_id VARCHAR(255) NOT NULL,
             location_name VARCHAR(255),
             start_date DATE NOT NULL, 
             end_date DATE,             
+            budget INT DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
     `;
