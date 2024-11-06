@@ -21,8 +21,8 @@ export const getTripsByUserId = async (userId: string): Promise<Trip[]> => {
 export const addTrip = async (userId: string, tripData: Trip): Promise<Trip> => {
     const {places_id,location_name,start_date, end_date } = tripData;
     const addTripSql = `
-        INSERT INTO trips (user_id, places_id,location_name,start_date, end_date)
-        VALUES ($1, $2, $3,$4,$5)
+        INSERT INTO trips (user_id, places_id, location_name, start_date, end_date)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *;
     `;
 
