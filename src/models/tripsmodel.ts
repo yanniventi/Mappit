@@ -60,3 +60,28 @@ export const deleteTripById = async (tripId: string): Promise<QueryResult> => {
     return pool.query(query, values);
 };
 
+ // Updates a trip in the database.
+ export const updateTripModel = async (tripId: string, fieldsToUpdate: { [key: string]: string }): Promise<QueryResult> => {
+     const keys = Object.keys(fieldsToUpdate);
+     const values = Object.values(fieldsToUpdate);
+ 
+     if (keys.length === 0) {
+         throw new Error('No fields provided for update');
+     }
+ 
+     const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(', ');
+ 
+     const updateTripSql = `
+         UPDATE trips
+         SET ${setClause}
+         WHERE id = $${keys.length + 1}
+     `;
+ 
+     try {
+         return await sqlToDB(updateTripSql, [...values, tripId]);
+     } catch (error) {
+         logger.error(`updateTripModel error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+         throw new Error('Failed to update trip');
+     }
+ };
+ 
