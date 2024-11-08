@@ -98,4 +98,20 @@ export const getBudgetByTripIdModel = async (tripId: string): Promise<number | n
     }
 };
 
- 
+ // Function to set the budget by trip ID
+export const setBudgetByTripIdModel = async (tripId: string, budget: number): Promise<void> => {
+    const setBudgetSql = `UPDATE trips SET budget = $1 WHERE id = $2;`;
+
+    try {
+        const result: QueryResult = await sqlToDB(setBudgetSql, [budget, tripId]);
+
+        if (result.rowCount === 0) {
+            throw new Error(`Trip with ID ${tripId} not found.`);
+        }
+
+        console.log(`Budget set successfully for trip ID: ${tripId}`);
+    } catch (error) {
+        logger.error(`setBudgetByTripIdModel error: ${getErrorMessage(error)}`);
+        throw new Error(`Failed to set budget for trip: ${getErrorMessage(error)}`);
+    }
+};
