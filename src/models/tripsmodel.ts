@@ -84,4 +84,18 @@ export const deleteTripById = async (tripId: string): Promise<QueryResult> => {
          throw new Error('Failed to update trip');
      }
  };
+
+ // Function to get the budget by trip ID
+export const getBudgetByTripIdModel = async (tripId: string): Promise<number | null> => {
+    const getBudgetSql = `SELECT budget FROM trips WHERE id = $1;`;
+
+    try {
+        const result: QueryResult = await sqlToDB(getBudgetSql, [tripId]);
+        return result.rows.length ? result.rows[0].budget : null;
+    } catch (error) {
+        logger.error(`getBudgetByTripId error: ${getErrorMessage(error)}`);
+        throw new Error(`Failed to fetch budget for trip: ${getErrorMessage(error)}`);
+    }
+};
+
  

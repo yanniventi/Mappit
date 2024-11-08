@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getTripsByUserId, addTrip, getTripById, deleteTripById, updateTripModel } from '../models/tripsmodel';
+import { getTripsByUserId, addTrip, getTripById, deleteTripById, updateTripModel, getBudgetByTripIdModel } from '../models/tripsmodel';
 import { logger } from './../utils/logger';
 
 // Controller to get all trips by user ID
@@ -126,6 +126,31 @@ export const updateTrip = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({
             status: 'error',
             message: 'Failed to update trip',
+            statusCode: 500,
+        });
+    }
+};
+
+// Controller to get the budget by trip ID
+export const getBudget = async (req: Request, res: Response): Promise<void> => {
+    const { tripId } = req.params;
+
+    try {
+        // Fetch the budget by trip ID
+        const budget = await getBudgetByTripIdModel(tripId);
+
+        if (budget === null) {
+            res.status(404).json({ message: 'Trip not found or budget not set' });
+            return;
+        }
+
+        // Respond with the budget
+        res.status(200).json({ budget });
+    } catch (error) {
+        logger.error(`getBudgetController error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch budget for trip',
             statusCode: 500,
         });
     }
