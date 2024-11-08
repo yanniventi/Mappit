@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { logger } from './../utils/logger';
-import { insertExpenseModel, getExpensesModel, deleteExpenseModel } from './../models/expensesModel';
-import { QueryResult } from 'pg';
+import { insertExpenseModel, getExpensesModel, getExpensesByTripIdModel, deleteExpenseModel } from './../models/expensesModel';
 
 /**
  * Inserts a new expense into the database.
@@ -10,9 +9,10 @@ import { QueryResult } from 'pg';
  * @returns { Promise<void> }
  */
 export const insertExpense = async (req: Request, res: Response): Promise<void> => {
-    const { user_id, name, category, amount, date, payment_type } = req.body;
-    
-    if (!user_id || !name || !category || !amount || !date || !payment_type) {
+    const { user_id, trips_id, name, category, amount, date, payment_type } = req.body;
+
+    // Validate required fields
+    if (!user_id || !trips_id || !name || !category || !amount || !date || !payment_type) {
         res.status(400).json({
             status: 'error',
             message: 'Missing required fields',
@@ -22,7 +22,7 @@ export const insertExpense = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-        await insertExpenseModel({ user_id, name, category, amount, date, payment_type });
+        await insertExpenseModel({ user_id, trips_id, name, category, amount, date, payment_type });
         res.status(201).json({
             status: 'ok',
             message: 'Expense inserted successfully',
@@ -40,19 +40,19 @@ export const insertExpense = async (req: Request, res: Response): Promise<void> 
 };
 
 /**
- * Retrieves expenses from the database.
+ * Retrieves expenses by user ID from the database.
  * @param { Request } req
  * @param { Response } res
  * @returns { Promise<void> }
  */
 export const getExpenses = async (req: Request, res: Response): Promise<void> => {
-    const { user_id } = req.body;
+    const { userId } = req.params;
 
     try {
-        const result: QueryResult = await getExpensesModel(user_id);
+        const expenses = await getExpensesModel(Number(userId));
         res.status(200).json({
             status: 'ok',
-            message: result.rows,
+            data: expenses,
             statusCode: 200,
         });
     } catch (error) {
@@ -66,18 +66,44 @@ export const getExpenses = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
+/**
+ * Retrieves expenses by trip ID from the database.
+ * @param { Request } req
+ * @param { Response } res
+ * @returns { Promise<void> }
+ */
+export const getExpensesByTripId = async (req: Request, res: Response): Promise<void> => {
+    const { tripsId } = req.params;
+
+    try {
+        const expenses = await getExpensesByTripIdModel(Number(tripsId));
+        res.status(200).json({
+            status: 'ok',
+            data: expenses,
+            statusCode: 200,
+        });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+        logger.error(`getExpensesByTripId error: ${errMsg}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve expenses for the specified trip',
+            statusCode: 500,
+        });
+    }
+};
 
 /**
- * Deletes an expense from the database.
+ * Deletes an expense from the database by user ID and expense ID.
  * @param { Request } req
  * @param { Response } res
  * @returns { Promise<void> }
  */
 export const deleteExpense = async (req: Request, res: Response): Promise<void> => {
-    const { user_id, expense_id } = req.body;
+    const { userId, expenseId } = req.params;
 
     // Validate required fields
-    if (!user_id || !expense_id) {
+    if (!userId || !expenseId) {
         res.status(400).json({
             status: 'error',
             message: 'Missing required fields',
@@ -87,21 +113,12 @@ export const deleteExpense = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-        const deleteResult = await deleteExpenseModel(user_id, expense_id);
-
-        if (deleteResult.rowCount === 0) {
-            res.status(404).json({
-                status: 'error',
-                message: 'Expense not found or not deleted',
-                statusCode: 404,
-            });
-        } else {
-            res.status(200).json({
-                status: 'ok',
-                message: 'Expense deleted successfully',
-                statusCode: 200,
-            });
-        }
+        const message = await deleteExpenseModel(Number(userId), Number(expenseId));
+        res.status(200).json({
+            status: 'ok',
+            message,
+            statusCode: 200,
+        });
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : 'Unknown error occurred';
         logger.error(`deleteExpense error: ${errMsg}`);
