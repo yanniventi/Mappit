@@ -1,19 +1,18 @@
 // controllers/locationController.ts
 import { Request, Response } from 'express';
-import { getRandomLocationName } from '../models/randomlocationModel';
+import { getRandomLocation } from '../models/randomlocationModel';
 import { logger } from '../utils/logger';
 
-// Controller to get a random location name
-export const getRandomLocationNameController = async (req: Request, res: Response): Promise<void> => {
+export const getRandomLocationController = async (req: Request, res: Response): Promise<void> => {
     try {
-        const locationName = await getRandomLocationName();
-        if (locationName) {
-            res.status(200).json({ location_name: locationName });
+        const location = await getRandomLocation();
+        if (location) {
+            res.status(200).json(location); // Return both id and location_name
         } else {
             res.status(404).json({ error: 'No location found' });
         }
     } catch (error) {
-        logger.error(`getRandomLocationNameController error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        res.status(500).json({ error: 'Failed to fetch random location name' });
+        logger.error(`getRandomLocationController error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        res.status(500).json({ error: 'Failed to fetch random location' });
     }
 };
