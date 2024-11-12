@@ -8,7 +8,7 @@ import { createExpensesTable } from '../tables/expensesTable';
 import { createSavedLocationsTable } from '../tables/savedLocationsTable';
 import { createplacesInTripTable } from '../tables/placesTable';
 import { createSublocationsTable } from '../tables/subLocationsTable';
-// import { insertSublocations } from '../tables/subLocationsTable';
+//import { insertSublocations } from '../tables/subLocationsTable';
 
 // Main function to create all tables
 const createAllTables = async () => {
@@ -21,7 +21,7 @@ const createAllTables = async () => {
         await createSavedLocationsTable(); // Create Saved-locations table
         await createplacesInTripTable(); // Create PLavesIntrip table 
         await createSublocationsTable(); // Create SubLocations table
-        // await insertSublocations(); // Insert Sublocations data
+        //await insertSublocations(); // Insert Sublocations data
 
     } catch (error) {
         console.error('Error creating tables:', error);
