@@ -2,6 +2,7 @@ import express from 'express';
 import cluster from 'cluster';
 import { config } from './config';
 import { logger } from './utils/logger';
+import cors from 'cors';
 import trafficRoutes from './routes/trafficRoutes';
 import userRoutes from './routes/userRoutes';
 import resetPasswordRoutes from './routes/resetPassword';
@@ -19,6 +20,27 @@ import path from 'path'; // For resolving directory paths
 const app = express();
 
 app.disable("x-powered-by"); // Reduce fingerprinting
+
+
+// Enable CORS for all requests from your frontend URL
+app.use(cors({
+    origin: 'http://localhost:3001',  // Replace with your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allowed HTTP methods
+    credentials: true,  // If you're dealing with cookies or authentication
+}));
+
+// Manually handle preflight requests for all routes
+app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        return res.status(200).json({});
+    }
+    next();
+});
+
+
 // Middleware to parse JSON request bodies
 app.use(express.json());
 

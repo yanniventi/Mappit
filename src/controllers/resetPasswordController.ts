@@ -42,7 +42,7 @@ export const requestPasswordReset = async (req: Request, res: Response): Promise
         await pool.query(updateQuery, [resetToken, resetTokenExpires, email]);
 
         // Send email with the reset link
-        const resetLink = `${req.protocol}://${req.get('host')}/api/reset-password/${resetToken}`;
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
