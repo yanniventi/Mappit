@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {
-  getPlacesinTripsByUserId,
+  getPlacesinTripsByUserAndTripId,
   addPlacesInTrip,
   getPlacesInTripId,
   deletePlaceById,
@@ -9,10 +9,10 @@ import { logger } from "./../utils/logger";
 
 // Controller to get all places by user ID
 export const getPlaces = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.params;
+  const { userId, tripId } = req.params;
 
   try {
-    const places = await getPlacesinTripsByUserId(userId);
+    const places = await getPlacesinTripsByUserAndTripId(Number(userId), Number(tripId));
     res.status(200).json(places);
   } catch (error) {
     logger.error(

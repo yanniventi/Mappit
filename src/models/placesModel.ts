@@ -5,13 +5,14 @@ import { logger } from "./../utils/logger";
 import pool from "../config/db";
 
 // Function to get all places  by user ID
-export const getPlacesinTripsByUserId = async (
-  userId: string
+export const getPlacesinTripsByUserAndTripId = async (
+  userId: number,
+  tripId: number
 ): Promise<Places[]> => {
-  const getTripsSql = `SELECT * FROM placesintrip WHERE user_id = $1;`;
+  const getTripsSql = `SELECT * FROM placesintrip WHERE user_id = $1 AND trips_id = $2;`;
 
   try {
-    const result: QueryResult = await sqlToDB(getTripsSql, [userId]);
+    const result: QueryResult = await sqlToDB(getTripsSql, [userId, tripId]);
     return result.rows;
   } catch (error) {
     logger.error(`getPlacesinTripsByUserId error: ${getErrorMessage(error)}`);

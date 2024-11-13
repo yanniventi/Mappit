@@ -77,8 +77,8 @@ export interface Trip       {
 
 export interface Places       {
     id?: number;
-    user_id: string;
-    trips_id: string;
+    user_id: number;
+    trips_id: number;
     places_id?:string;
 }
 

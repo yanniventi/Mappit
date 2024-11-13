@@ -9,7 +9,7 @@ import {
 const router = Router();
 
 // Route to get all places for a user's trips
-router.get("/users/:userId/places", getPlaces);
+router.get("/users/:userId/:tripId/places", getPlaces);
 
 // Route to create a new place in a trip for a user
 router.post("/users/:userId/places", createPlaceInTrip);
