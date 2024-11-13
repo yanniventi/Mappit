@@ -50,7 +50,7 @@ export const addPlacesInTrip = async (
 export const getPlacesInTripId = async (
   placesId: string
 ): Promise<Places | null> => {
-  const getPlaceSql = `SELECT * FROM placesintrip WHERE places_id = $1;`;
+  const getPlaceSql = `SELECT * FROM placesintrip WHERE trips_id = $1;`;
 
   try {
     const result: QueryResult = await sqlToDB(getPlaceSql, [placesId]);
