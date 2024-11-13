@@ -8,7 +8,8 @@ export const createSublocationsTable = async (): Promise<void> => {
             location_name TEXT,
             about TEXT,
             additional_info TEXT,
-            img_url VARCHAR(255)
+            img_url VARCHAR(255),
+            FOREIGN KEY (location_id) REFERENCES locations(id)
         );
     `;
     try {
