@@ -100,10 +100,10 @@ export const getExpensesByTripId = async (req: Request, res: Response): Promise<
  * @returns { Promise<void> }
  */
 export const deleteExpense = async (req: Request, res: Response): Promise<void> => {
-    const { userId, expenseId } = req.params;
+    const { expenseId } = req.params;
 
     // Validate required fields
-    if (!userId || !expenseId) {
+    if (!expenseId) {
         res.status(400).json({
             status: 'error',
             message: 'Missing required fields',
@@ -113,7 +113,7 @@ export const deleteExpense = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-        const message = await deleteExpenseModel(Number(userId), Number(expenseId));
+        const message = await deleteExpenseModel(Number(expenseId));
         res.status(200).json({
             status: 'ok',
             message,
