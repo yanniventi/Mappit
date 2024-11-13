@@ -83,9 +83,9 @@ export const getExpensesByTripIdModel = async (tripsId: number): Promise<Expense
  * @param { number } expense_id
  * @returns { Promise<string> }
  */
-export const deleteExpenseModel = async (user_id: number, expense_id: number): Promise<string> => {
-    const query = 'DELETE FROM expenses WHERE user_id = $1 AND id = $2';
-    const values = [user_id, expense_id];
+export const deleteExpenseModel = async (expense_id: number): Promise<string> => {
+    const query = 'DELETE FROM expenses WHERE id = $1';
+    const values = [expense_id];
 
     try {
         const result: QueryResult = await pool.query(query, values);
